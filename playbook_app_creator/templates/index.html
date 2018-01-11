@@ -1,0 +1,26 @@
+(% extends "layout.html" %)
+(% block content %)
+<div id="content">
+    <div class="phase columns large-3" style="background-color: #cccccc;">
+        <h1>Input</h1>
+        <new-input></new-input>
+        <button class="button" v-on:click="addInput">Click me</button>
+        <div v-for="input in inputs">
+            {{ input }}
+        </div>
+    </div>
+    <div class="phase columns large-6" style="background-color: #888888;">
+        <h1>Logic</h1>
+        <textarea placeholder="Enter the code you would like the app to perform..."></textarea>
+    </div>
+    <div class="phase columns large-3" style="background-color: #cccccc;">
+        <h1>Output</h1>
+    </div>
+
+    <form action="(( url_for('test') ))">
+        <input type="inputs" name="inputs" :value="inputs" hidden="hidden">
+        <input type="submit" name="submit">
+    </form>
+</div>
+<script type="text/javascript" src="(( url_for('static', filename='playbookAppCreator.js') ))"></script>
+(% endblock %)
