@@ -26,7 +26,7 @@ def index():
 
 @app.route("/test")
 def test():
-    return request.args['inputs']
+    return request.args['parameters']
 
 
 if __name__ == '__main__':
