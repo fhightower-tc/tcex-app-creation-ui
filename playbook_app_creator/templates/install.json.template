@@ -1,0 +1,18 @@
+{
+  "allowOnDemand": true,
+  "displayName": "abc",
+  "languageVersion": "3.6",
+  "listDelimiter": "|",
+  "note": "abc",
+  "params": %s,
+  "playbook": {
+    "outputVariables": %s,
+    "retry": {},
+    "type": "Client"
+  },
+  "programLanguage": "python",
+  "programMain": "abc",
+  "programVersion": "abc",
+  "repeatingMinutes": [],
+  "runtimeLevel": "Playbook"
+}
