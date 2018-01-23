@@ -1,40 +1,11 @@
 (% extends "layout.html" %)
 (% block content %)
-<div id="content">
-    <div class="phase columns large-3">
-        <h1>Input Parameters</h1>
-        <new-input></new-input>
-        <div v-for="parameter in parameters">
-            {{ parameter }}
-        </div>
-    </div>
-    <div class="phase columns large-6">
-        <h1>Logic</h1>
-        <textarea placeholder="Enter the code you would like the app to perform..."></textarea>
-    </div>
-    <div class="phase columns large-3">
-        <h1>Output Variables</h1>
-        <new-output></new-output>
-        <div v-for="outputVariable in outputVariables">
-            {{ outputVariable }}
-        </div>
-    </div>
+<div class="row">
+    <h1>Welcome!</h1>
 
-    <!-- <div class="clearfix"></div> -->
-
-    <div class="row">
-        <form action="(( url_for('test') ))" class="float-right">
-            <input type="input" name="parameters" :value="JSON.stringify(parameters)" hidden="hidden" >
-            <input type="input" name="outputVariables" :value="JSON.stringify(outputVariables)" hidden="hidden"/>
-            <input class="button float-right" type="submit" name="submit">
-        </form>
-    </div>
+    <form action="(( url_for('get_app_details') ))">
+        <input type="text" name="appName" placeholder="Enter the name of your new app...">
+        <input class="button" type="submit" name="Submit">
+    </form>
 </div>
-<script type="text/javascript" src="(( url_for('static', filename='playbookAppCreator.js') ))"></script>
-<script type="text/javascript">
-    $.jGrowl.defaults.closer = false;
-    // window.setTimeout(function() {
-    //     $(document).foundation();
-    // }, 100);
-</script>
 (% endblock %)
