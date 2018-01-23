@@ -25,11 +25,15 @@ app.secret_key = 'abc'
 
 @app.route("/")
 def index():
-    # request.form['text']
     return render_template("index.html")
 
 
-def prepare_install_json():
+@app.route("/app-details")
+def get_app_details():
+    return render_template("app-details.html", app_name=request.args['appName'])
+
+
+def prepare_install_json(request):
     """Prepare the install.json with the correct parameters and output variables."""
     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/install.json.template"))) as f:
         install_json_template = f.read()
@@ -38,19 +42,19 @@ def prepare_install_json():
     return json.dumps(install_json, indent=4)
 
 
-def prepare_tcex_app():
+def prepare_tcex_app(request):
     """Prepare the python app with the correct parameters and output variables."""
     # TODO: create the app template here
     app = "app_template_here"
     return app
 
 
-@app.route("/test")
-def test():
-    install_json = prepare_install_json().replace('\n', '<br>').replace(' ', '&nbsp;')
-    app = prepare_tcex_app()
+@app.route("/tcex")
+def tcex():
+    install_json = prepare_install_json(request).replace('\n', '<br>').replace(' ', '&nbsp;')
+    app = prepare_tcex_app(request)
 
-    return render_template('tcex.html', install_json=install_json, app=app)
+    return render_template('tcex.html', install_json=install_json, app=app, app_name=request.args['appName'])
 
 
 if __name__ == '__main__':
