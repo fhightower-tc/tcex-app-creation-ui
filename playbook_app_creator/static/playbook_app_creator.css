@@ -22,19 +22,24 @@ a {
 }
 
 .light {
-    background-color: #f2f2f2;
+    background-color: #f8f8f8;
 }
 
 .blue {
     background-color: #0072CE;
-    color: #f2f2f2;
+    color: #f8f8f8;
+}
+
+.blue:hover {
+    background-color: #0072CE;
+    color: #f8f8f8;
 }
 
 .dark {
     background-color: #222222;
-    color: #f2f2f2;
+    color: #f8f8f8;
 }
 
 .dark a {
-    color: #f2f2f2;
+    color: #f8f8f8;
 }
