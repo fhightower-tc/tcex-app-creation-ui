@@ -44,9 +44,20 @@ def prepare_install_json(request):
 
 def prepare_tcex_app(request):
     """Prepare the python app with the correct parameters and output variables."""
-    # TODO: create the app template here
-    app = "app_template_here"
-    return app
+    app_template = None
+
+    with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/playbook_app.template"))) as f:
+        app_template = f.read()
+
+    output_variables = json.loads(request.args['outputVariables'])
+    outputVariableString = str()
+
+    for variable in output_variables:
+        outputVariableString += "tcex.playbook.create_output({}, TODO: add a value here)".format(variable['name']) + "\n"
+
+    app_template = app_template.format(outputVariableString)
+
+    return app_template
 
 
 @app.route("/tcex")
