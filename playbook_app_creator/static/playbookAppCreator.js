@@ -3,7 +3,14 @@ Vue.component('new-input', {
         <div>
             <form id="input-form">
                 <div v-for="input in inputFields">
-                    <label>{{ input.name }}: <span v-if=input.required style="color: red;">*</span><input :type=input.type name="label" v-model=input.value></label>
+                    <label>{{ input.name }}: <span v-if=input.required style="color: red;">*</span>
+                    <input v-if="!input.possibleValues" :type=input.type name="label" v-model="input.value">
+                    <select v-if="input.multiple" v-model="input.value" multiple>
+                      <option v-for="option in input.possibleValues">{{ option }}</option>
+                    </select>
+                    <select v-if="input.possibleValues && !input.multiple" v-model="input.value">
+                      <option v-for="option in input.possibleValues">{{ option }}</option>
+                    </select></label>
                 </div>
             </form>
             <button class="button secondary" v-on:click="addParameter">Add parameter</button>
@@ -23,19 +30,20 @@ Vue.component('new-input', {
             type: 'text',
             value: '',
             defaultValue: '',
-        }, {// TODO: add better handling for type
+        }, {
             name: 'type',
             required: true,
             type: 'text',
-            value: '',
-            defaultValue: '',
+            value: 'String',
+            defaultValue: 'String',
+            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'] // todo: do something when the value of this changes - modify the other displayed values
         }, {
             name: 'allowMultiple',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
-        }, {// TODO: add handling for default
+        }, {// TODO: add handling for default - this value can be one of many different types (strings, bools, etc.)
             name: 'default',
             required: false,
             type: 'checkbox',
@@ -59,12 +67,14 @@ Vue.component('new-input', {
             type: 'text',
             value: '',
             defaultValue: '',
-        }, {// TODO: add handline for playbookDataType
+        }, {
             name: 'playbookDataType',
             required: false,
             type: 'text',
-            value: '',
-            defaultValue: '',
+            value: 'String',
+            defaultValue: 'String',
+            possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
+            multiple: true
         }, {
             name: 'required',
             required: false,
@@ -83,7 +93,7 @@ Vue.component('new-input', {
             type: 'text',
             value: '',
             defaultValue: '',
-        }, {// TODO: add better handling here...
+        }, {
             name: 'viewRows',
             required: false,
             type: 'number',
