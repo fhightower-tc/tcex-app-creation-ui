@@ -4,8 +4,12 @@
     <h1>Welcome!</h1>
 
     <form action="(( url_for('get_app_details') ))">
-        <input type="text" name="appName" placeholder="Enter the name of your new app...">
+        <input id="app-name" type="text" name="appName" placeholder="Enter the name of your new app...">
         <input class="button" type="submit" name="Submit">
     </form>
 </div>
+
+<script type="text/javascript">
+    $('#app-name').focus()
+</script>
 (% endblock %)

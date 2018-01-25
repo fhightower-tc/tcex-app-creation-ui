@@ -8,9 +8,20 @@ from playbook_app_creator import playbook_app_creator
 
 
 def _test_heading(response):
-    """."""
+    """Make sure the heading is correct."""
     assert 'Playbook App Creator' in response
     assert 'App to aid the creation of playbook apps for ThreatConnect.' in response
+
+
+def _test_code_block(response):
+    """Make sure there is a code block in the response."""
+    strings = ['def main():', 'if __name__ == &#34;__main__&#34;:', 'from tcex import TcEx', '# -*- coding: utf-8 -*-']
+
+    for string in strings:
+        try:
+            assert string in response
+        except AssertionError:
+            raise AssertionError("Unable to find {} in {}".format(string, response))
 
 
 class PlaybookAppCreatorTestCase(unittest.TestCase):
@@ -37,3 +48,5 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('"label":&nbsp;"a"', rv.data.decode())
         self.assertIn('"name":&nbsp;"b",', rv.data.decode())
         self.assertIn('"type":&nbsp;"c",', rv.data.decode())
+        _test_code_block(rv.data.decode())
+        assert 'tcex.playbook.create_output(output1, TODO: add a value here)' in rv.data.decode()
