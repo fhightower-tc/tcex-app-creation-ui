@@ -30,13 +30,19 @@ def index():
 
 @app.route("/app-details")
 def get_app_details():
-    return render_template("app-details.html", app_name=request.args['appName'])
+    if request.args.get('appName'):
+        return render_template("app-details.html", app_name=request.args['appName'])
+    else:
+        # TODO: add an error, flash message here (1)
+        return redirect(url_for('index'))
 
 
 def prepare_install_json(request):
     """Prepare the install.json with the correct parameters and output variables."""
     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/install.json.template"))) as f:
         install_json_template = f.read()
+
+    # TODO: remove all install.json fields that match the default value (1)
 
     install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables']))
     return json.dumps(install_json, indent=4)
@@ -62,10 +68,14 @@ def prepare_tcex_app(request):
 
 @app.route("/tcex")
 def tcex():
-    install_json = prepare_install_json(request).replace('\n', '<br>').replace(' ', '&nbsp;')
-    app = prepare_tcex_app(request)
+    if request.args.get('appName') and request.args.get('parameters') and request.args.get('outputVariables'):
+        install_json = prepare_install_json(request).replace('\n', '<br>').replace(' ', '&nbsp;')
+        app = prepare_tcex_app(request)
 
-    return render_template('tcex.html', install_json=install_json, app=app, app_name=request.args['appName'])
+        return render_template('tcex.html', install_json=install_json, app=app, app_name=request.args['appName'])
+    else:
+        # TODO: add an error, flash message here (1)
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

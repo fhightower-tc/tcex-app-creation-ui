@@ -4,6 +4,8 @@
 import html
 import unittest
 
+from flask import url_for
+
 from playbook_app_creator import playbook_app_creator
 
 
@@ -50,3 +52,19 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('"type":&nbsp;"c",', rv.data.decode())
         _test_code_block(rv.data.decode())
         assert 'tcex.playbook.create_output(output1, TODO: add a value here)' in rv.data.decode()
+
+
+class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.app = playbook_app_creator.app.test_client()
+
+    def test_get_inputs_without_arguments(self):
+        """This should redirect back to the index."""
+        rv = self.app.get('/app-details', follow_redirects=True)
+        _test_heading(rv.data.decode())
+
+    def test_tcex_without_arguments(self):
+        """This should redirect to the index."""
+        rv = self.app.get('/tcex', follow_redirects=True)
+        _test_heading(rv.data.decode())
