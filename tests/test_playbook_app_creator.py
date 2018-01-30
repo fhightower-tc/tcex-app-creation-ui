@@ -15,9 +15,26 @@ def _test_heading(response):
     assert 'App to aid the creation of playbook apps for ThreatConnect.' in response
 
 
-def _test_code_block(response):
+def _test_index(response):
+    """Make sure the index page is shown."""
+    assert 'Welcome!' in response
+    _test_heading(response)
+
+
+def _test_install_json(response):
     """Make sure there is a code block in the response."""
-    strings = ['def main():', 'if __name__ == &#34;__main__&#34;:', 'from tcex import TcEx', '# -*- coding: utf-8 -*-']
+    strings = ['"type":&nbsp;"String",', '"name":&nbsp;"b",', '"label":&nbsp;"a"', '"type":&nbsp;"String",', '"name":&nbsp;"output1"', '"programMain":&nbsp;"test_app",']
+
+    for string in strings:
+        try:
+            assert string in response
+        except AssertionError:
+            raise AssertionError("Unable to find {} in {}".format(string, response))
+
+
+def _test_app(response):
+    """Make sure there is a code block in the response."""
+    strings = ['# -*- coding: utf-8 -*-', 'from tcex import TcEx', 'def main():', 'if __name__ == &#34;__main__&#34;:', "tcex.parser.add_argument('--b', help='a')", 'tcex.playbook.create_output(output1, TODO: add a value here)', ]
 
     for string in strings:
         try:
@@ -42,16 +59,21 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('Logic', rv.data.decode())
         self.assertIn('Output Variables', rv.data.decode())
 
-    def test_output_tcex(self):
-        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A""%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"c"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+    def test_install_json_output(self):
+        """Make sure the install.json created by the app is correct."""
+        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
         _test_heading(rv.data.decode())
         self.assertIn('install.json', rv.data.decode())
+        # validate that inputs are shown
+        _test_install_json(rv.data.decode())
+
+    def test_app_output(self):
+        """Make sure the app created by the app is correct."""
+        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        _test_heading(rv.data.decode())
         self.assertIn('test_app.py', rv.data.decode())
-        self.assertIn('"label":&nbsp;"a"', rv.data.decode())
-        self.assertIn('"name":&nbsp;"b",', rv.data.decode())
-        self.assertIn('"type":&nbsp;"c",', rv.data.decode())
-        _test_code_block(rv.data.decode())
-        assert 'tcex.playbook.create_output(output1, TODO: add a value here)' in rv.data.decode()
+        # validate that outputs are shown
+        _test_app(rv.data.decode())
 
 
 class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
@@ -62,9 +84,9 @@ class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
     def test_get_inputs_without_arguments(self):
         """This should redirect back to the index."""
         rv = self.app.get('/app-details', follow_redirects=True)
-        _test_heading(rv.data.decode())
+        _test_index(rv.data.decode())
 
     def test_tcex_without_arguments(self):
         """This should redirect to the index."""
         rv = self.app.get('/tcex', follow_redirects=True)
-        _test_heading(rv.data.decode())
+        _test_index(rv.data.decode())
