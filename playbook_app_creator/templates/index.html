@@ -3,6 +3,17 @@
 <div class="row">
     <h1>Welcome!</h1>
 
+    <br>
+
+    (% with messages = get_flashed_messages(with_categories=true) %)
+      (% if messages %)
+        (% for category, message in messages %)
+          <span class="(( category ))">(( message ))</span>
+        (% endfor %)
+        <br><br><br>
+      (% endif %)
+    (% endwith %)
+
     <form action="(( url_for('get_app_details') ))">
         <input id="app-name" type="text" name="appName" placeholder="Enter the name of your new app...">
         <input class="button" type="submit" name="Submit">

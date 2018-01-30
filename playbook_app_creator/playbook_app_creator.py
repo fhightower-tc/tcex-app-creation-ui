@@ -33,7 +33,7 @@ def get_app_details():
     if request.args.get('appName'):
         return render_template("app-details.html", app_name=request.args['appName'])
     else:
-        # TODO: add an error, flash message here (1)
+        flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
 
 
@@ -74,7 +74,7 @@ def tcex():
 
         return render_template('tcex.html', install_json=install_json, app=app, app_name=request.args['appName'])
     else:
-        # TODO: add an error, flash message here (1)
+        flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
 
 

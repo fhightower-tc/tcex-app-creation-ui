@@ -85,8 +85,10 @@ class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
         """This should redirect back to the index."""
         rv = self.app.get('/app-details', follow_redirects=True)
         _test_index(rv.data.decode())
+        assert 'Please enter a name for this app.' in rv.data.decode()
 
     def test_tcex_without_arguments(self):
         """This should redirect to the index."""
         rv = self.app.get('/tcex', follow_redirects=True)
         _test_index(rv.data.decode())
+        assert 'Please enter a name for this app.' in rv.data.decode()
