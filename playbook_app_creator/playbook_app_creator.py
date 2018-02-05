@@ -42,8 +42,6 @@ def prepare_install_json(request):
     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/install.json.template"))) as f:
         install_json_template = f.read()
 
-    # TODO: remove all install.json fields that match the default value (1)
-
     install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables'], request.args['appName']))
     return json.dumps(install_json, indent=4)
 

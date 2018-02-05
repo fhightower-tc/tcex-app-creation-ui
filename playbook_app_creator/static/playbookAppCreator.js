@@ -36,7 +36,8 @@ Vue.component('new-input', {
             type: 'text',
             value: 'String',
             defaultValue: 'String',
-            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'] // todo: do something when the value of this changes - modify the other displayed values
+            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'], // todo: do something when the value of this changes - modify the other displayed values
+            keepIfDefault: true,
         }, {
             name: 'allowMultiple',
             required: false,
@@ -71,10 +72,10 @@ Vue.component('new-input', {
             name: 'playbookDataType',
             required: false,
             type: 'text',
-            value: 'String',
-            defaultValue: 'String',
+            value: '',
+            defaultValue: '',
             possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
-            multiple: true
+            multiple: true,
         }, {
             name: 'required',
             required: false,
@@ -128,7 +129,9 @@ Vue.component('new-input', {
             var inputObject = {};
 
             for (var i = this.inputFields.length - 1; i >= 0; i--) {
-                inputObject[this.inputFields[i].name] = this.inputFields[i].value;
+                if (this.inputFields[i].value !== this.inputFields[i].defaultValue || this.inputFields[i].keepIfDefault) {
+                    inputObject[this.inputFields[i].name] = this.inputFields[i].value;
+                }
             }
 
             playbookAppVue.parameters.push(inputObject);
@@ -148,7 +151,7 @@ Vue.component('new-output', {
                     <label>{{ output.name }}: <span v-if=output.required style="color: red;">*</span><input :type=output.type name="label" v-model=output.value></label>
                 </div>
             </form>
-            <button class="button secondary" v-on:click="addParameter">Add parameter</button>
+            <button class="button secondary" v-on:click="addOutputVariable">Add parameter</button>
         </div>
     `,
     data: function () {
@@ -185,7 +188,7 @@ Vue.component('new-output', {
                 this.outputFields[i].value = this.outputFields[i].defaultValue;
             }
         },
-        addParameter: function() {
+        addOutputVariable: function() {
             /* Prepare the output object as an object. */
             if (!this.validOutputs()) {
                 return;
