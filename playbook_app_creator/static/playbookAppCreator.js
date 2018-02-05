@@ -51,6 +51,12 @@ Vue.component('new-input', {
             value: false,
             defaultValue: false,
         }, {
+            name: 'default',
+            required: false,
+            type: 'text',
+            value: '',
+            defaultValue: '',
+        }, {
             name: 'encrypt',
             required: false,
             type: 'checkbox',
@@ -88,12 +94,13 @@ Vue.component('new-input', {
             type: 'number',
             value: undefined,
             defaultValue: undefined,
-        }, {// TODO: add better handling here...
+        }, {
             name: 'validValues',
             required: false,
             type: 'text',
             value: '',
             defaultValue: '',
+            help: 'This limits the number of possible values for this input parameter. If you want to have multiple values, separate them with a semi-colon (";").'
         }, {
             name: 'viewRows',
             required: false,
@@ -114,6 +121,10 @@ Vue.component('new-input', {
             }
             return true;
         },
+        handleValidValues: function(validValuesString) {
+            /* Create an array out of a semi-colon delimited string given for the valid values. */
+            return validValuesString.split(";").map(x => x.trim());
+        },
         resetValues: function() {
             /* Reset the values of every entry. */
             for (var i = this.inputFields.length - 1; i >= 0; i--) {
@@ -130,7 +141,11 @@ Vue.component('new-input', {
 
             for (var i = this.inputFields.length - 1; i >= 0; i--) {
                 if (this.inputFields[i].value !== this.inputFields[i].defaultValue || this.inputFields[i].keepIfDefault) {
-                    inputObject[this.inputFields[i].name] = this.inputFields[i].value;
+                    if (this.inputFields[i].name === 'validValues') {
+                        inputObject[this.inputFields[i].name] = this.handleValidValues(this.inputFields[i].value);
+                    } else {
+                        inputObject[this.inputFields[i].name] = this.inputFields[i].value;
+                    }
                 }
             }
 
