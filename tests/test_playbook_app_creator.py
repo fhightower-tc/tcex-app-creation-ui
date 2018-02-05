@@ -34,7 +34,7 @@ def _test_install_json(response):
 
 def _test_app(response):
     """Make sure there is a code block in the response."""
-    strings = ['# -*- coding: utf-8 -*-', 'from tcex import TcEx', 'def main():', 'if __name__ == &#34;__main__&#34;:', "tcex.parser.add_argument('--b', help='a')", 'tcex.playbook.create_output(output1, TODO: add a value here)', ]
+    strings = ['# -*- coding: utf-8 -*-', 'from tcex import TcEx', 'def main():', 'if __name__ == &#34;__main__&#34;:', "tcex.parser.add_argument(&#39;--b&#39;, help=&#39;a&#39;)", 'tcex.playbook.create_output(output1, TODO: add a value here)', ]
 
     for string in strings:
         try:

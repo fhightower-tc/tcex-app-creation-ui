@@ -44,7 +44,7 @@ def prepare_install_json(request):
 
     # TODO: remove all install.json fields that match the default value (1)
 
-    install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables']))
+    install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables'], request.args['appName']))
     return json.dumps(install_json, indent=4)
 
 
@@ -55,13 +55,21 @@ def prepare_tcex_app(request):
     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/playbook_app.template"))) as f:
         app_template = f.read()
 
+    # handle input variables
+    parameters = json.loads(request.args['parameters'])
+    parameters_string = str()
+
+    for parameter in parameters:
+        parameters_string += "tcex.parser.add_argument('--{}', help='{}')".format(parameter['name'], parameter['label'])
+
+    # handle output variables
     output_variables = json.loads(request.args['outputVariables'])
     outputVariableString = str()
 
     for variable in output_variables:
         outputVariableString += "tcex.playbook.create_output({}, TODO: add a value here)".format(variable['name']) + "\n"
 
-    app_template = app_template.format(outputVariableString)
+    app_template = app_template.format(outputVariableString, parameters_string)
 
     return app_template
 

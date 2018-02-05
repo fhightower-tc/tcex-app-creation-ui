@@ -9,7 +9,7 @@ from tcex import TcEx
 def parse_arguments():
     """Parse arguments coming into the app."""
     # retrieve the string as an argument
-    tcex.parser.add_argument('--string', help='Input string', required=True)
+    {1}
     return tcex.args
 
 
