@@ -3,14 +3,16 @@ Vue.component('new-input', {
         <div>
             <form id="input-form">
                 <div v-for="input in inputFields">
-                    <label><span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 :title="input.help">{{ input.name }}</span>: <span v-if=input.required style="color: red;"><b>*</b></span>
-                    <input v-if="!input.possibleValues" :type=input.type name="label" v-model="input.value">
-                    <select v-if="input.multiple" v-model="input.value" multiple>
-                      <option v-for="option in input.possibleValues">{{ option }}</option>
-                    </select>
-                    <select v-if="input.possibleValues && !input.multiple" v-model="input.value">
-                      <option v-for="option in input.possibleValues">{{ option }}</option>
-                    </select></label>
+                    <span v-if="input.condition()">
+                        <label><span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 :title="input.help">{{ input.name }}</span>: <span v-if=input.required style="color: red;"><b>*</b></span>
+                        <input :id="input.name + \'-field\'"  v-if="!input.possibleValues" :type=input.type name="label" v-model="input.value">
+                        <select :id="input.name + \'-field\'" v-if="input.multiple" v-model="input.value" multiple>
+                          <option v-for="option in input.possibleValues">{{ option }}</option>
+                        </select>
+                        <select :id="input.name + \'-field\'" v-if="input.possibleValues && !input.multiple" v-model="input.value">
+                          <option v-for="option in input.possibleValues">{{ option }}</option>
+                        </select></label>
+                    </span>
                 </div>
             </form>
             <button class="button secondary" v-on:click="addParameter">Add parameter</button>
@@ -25,6 +27,9 @@ Vue.component('new-input', {
             value: '',
             defaultValue: '',
             help: 'Give the input parameter a name that will be used in the code for the app.',
+            condition: function() {
+                return true;
+            },
         }, {
             name: 'label',
             required: true,
@@ -32,15 +37,75 @@ Vue.component('new-input', {
             value: '',
             defaultValue: '',
             help: 'Give the input parameter a label which will be shown in the UI when configuring the app.',
+            condition: function() {
+                return true;
+            },
         }, {
             name: 'type',
             required: true,
             type: 'text',
             value: 'String',
             defaultValue: 'String',
-            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'], // todo: do something when the value of this changes - modify the other displayed values (3)
+            // todo: do something when the value of this changes - modify the other displayed values (3)
+            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'],
             keepIfDefault: true,
             help: 'Specify the type of the input parameter. This will determine which UI input element is used when configuring the app.',
+            condition: function() {
+                return true;
+            },
+        }, {
+            name: 'default (as a boolean)',
+            required: false,
+            type: 'checkbox',
+            value: false,
+            defaultValue: false,
+            help: 'Give the input parameter a default value.',
+            condition: function() {
+                return true;
+            },
+        }, {
+            name: 'default (as a string/integer)',
+            required: false,
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            help: 'Give the input parameter a default value.',
+            condition: function() {
+                return true;
+            },
+        }, {
+            name: 'encrypt',
+            required: false,
+            type: 'checkbox',
+            value: false,
+            defaultValue: false,
+            help: 'Choose to encrypt the input value (useful for passwords, API keys, and other sensitive values).',
+            condition: function() {
+                showIfValues = ['String', undefined];
+                compareValue = $('#type-field').val();
+
+                return showIfValues.indexOf(compareValue) !== -1;
+            }
+        }, {
+            name: 'required',
+            required: false,
+            type: 'checkbox',
+            value: false,
+            defaultValue: false,
+            help: 'Choose to make the input parameter required.',
+            condition: function() {
+                return true;
+            }
+        }, {
+            name: 'validValues',
+            required: false,
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            help: 'This limits the number of possible values for this input parameter. If you want to have multiple values, separate them with a semi-colon (";").',
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'allowMultiple',
             required: false,
@@ -49,27 +114,9 @@ Vue.component('new-input', {
             defaultValue: false,
             // todo: add a better description to the help message below... I'm not exactly sure what the allowMultiple does (3)
             help: 'Choose to allow multiple inputs for this input parameter.',
-        }, {
-            name: 'default (as a boolean)',
-            required: false,
-            type: 'checkbox',
-            value: false,
-            defaultValue: false,
-            help: 'Give the input parameter a default value.',
-        }, {
-            name: 'default (as a string/integer)',
-            required: false,
-            type: 'text',
-            value: '',
-            defaultValue: '',
-            help: 'Give the input parameter a default value.',
-        }, {
-            name: 'encrypt',
-            required: false,
-            type: 'checkbox',
-            value: false,
-            defaultValue: false,
-            help: 'Choose to encrypt the input value (useful for passwords, API keys, and other sensitive values).',
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'hidden',
             required: false,
@@ -78,6 +125,9 @@ Vue.component('new-input', {
             defaultValue: false,
             // todo: make sure the help message below is accurate (3)
             help: 'Choose to hide this input parameter in the UI when configuring the app.',
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'note',
             required: false,
@@ -86,6 +136,9 @@ Vue.component('new-input', {
             defaultValue: '',
             // TODO: not sure what this value does (3)
             help: 'Not sure what this does yet...',
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'playbookDataType',
             required: false,
@@ -96,13 +149,9 @@ Vue.component('new-input', {
             multiple: true,
             // TODO: not sure what this value does (3)
             help: 'Not sure what this does yet...',
-        }, {
-            name: 'required',
-            required: false,
-            type: 'checkbox',
-            value: false,
-            defaultValue: false,
-            help: 'Choose to make the input parameter required.',
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'sequence',
             required: false,
@@ -110,13 +159,9 @@ Vue.component('new-input', {
             value: undefined,
             defaultValue: undefined,
             help: 'Specify the order in which this input parameter will be listed when configuring the playbook. Lower numbers are listed first and higher numbers are listed later',
-        }, {
-            name: 'validValues',
-            required: false,
-            type: 'text',
-            value: '',
-            defaultValue: '',
-            help: 'This limits the number of possible values for this input parameter. If you want to have multiple values, separate them with a semi-colon (";").'
+            condition: function() {
+                return true;
+            }
         }, {
             name: 'viewRows',
             required: false,
@@ -125,6 +170,9 @@ Vue.component('new-input', {
             defaultValue: undefined,
             // TODO: not sure what this value does (3)
             help: 'Not sure what this does yet...',
+            condition: function() {
+                return true;
+            }
         }],
       };
     },
