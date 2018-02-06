@@ -17,64 +17,75 @@ Vue.component('new-input', {
         </div>
     `,
     data: function () {
-      // TODO: add 'help' entries for each inputFields
       return {
         inputFields: [{
-            name: 'label',
-            required: true,
-            type: 'text',
-            value: '',
-            defaultValue: '',
-        }, {
             name: 'name',
             required: true,
             type: 'text',
             value: '',
             defaultValue: '',
+            help: 'Give the input parameter a name that will be used in the code for the app.',
+        }, {
+            name: 'label',
+            required: true,
+            type: 'text',
+            value: '',
+            defaultValue: '',
+            help: 'Give the input parameter a label which will be shown in the UI when configuring the app.',
         }, {
             name: 'type',
             required: true,
             type: 'text',
             value: 'String',
             defaultValue: 'String',
-            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'], // todo: do something when the value of this changes - modify the other displayed values
+            possibleValues: ['Boolean', 'Choice', 'KeyValueList', 'MultiChoice', 'String', 'StringMixed'], // todo: do something when the value of this changes - modify the other displayed values (3)
             keepIfDefault: true,
+            help: 'Specify the type of the input parameter. This will determine which UI input element is used when configuring the app.',
         }, {
             name: 'allowMultiple',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
-        }, {// TODO: add handling for default - this value can be one of many different types (strings, bools, etc.)
-            name: 'default',
+            // todo: add a better description to the help message below... I'm not exactly sure what the allowMultiple does (3)
+            help: 'Choose to allow multiple inputs for this input parameter.',
+        }, {
+            name: 'default (as a boolean)',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
+            help: 'Give the input parameter a default value.',
         }, {
-            name: 'default',
+            name: 'default (as a string/integer)',
             required: false,
             type: 'text',
             value: '',
             defaultValue: '',
+            help: 'Give the input parameter a default value.',
         }, {
             name: 'encrypt',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
+            help: 'Choose to encrypt the input value (useful for passwords, API keys, and other sensitive values).',
         }, {
             name: 'hidden',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
+            // todo: make sure the help message below is accurate (3)
+            help: 'Choose to hide this input parameter in the UI when configuring the app.',
         }, {
             name: 'note',
             required: false,
             type: 'text',
             value: '',
             defaultValue: '',
+            // TODO: not sure what this value does (3)
+            help: 'Not sure what this does yet...',
         }, {
             name: 'playbookDataType',
             required: false,
@@ -83,18 +94,22 @@ Vue.component('new-input', {
             defaultValue: '',
             possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
             multiple: true,
+            // TODO: not sure what this value does (3)
+            help: 'Not sure what this does yet...',
         }, {
             name: 'required',
             required: false,
             type: 'checkbox',
             value: false,
             defaultValue: false,
+            help: 'Choose to make the input parameter required.',
         }, {
             name: 'sequence',
             required: false,
             type: 'number',
             value: undefined,
             defaultValue: undefined,
+            help: 'Specify the order in which this input parameter will be listed when configuring the playbook. Lower numbers are listed first and higher numbers are listed later',
         }, {
             name: 'validValues',
             required: false,
@@ -108,6 +123,8 @@ Vue.component('new-input', {
             type: 'number',
             value: undefined,
             defaultValue: undefined,
+            // TODO: not sure what this value does (3)
+            help: 'Not sure what this does yet...',
         }],
       };
     },
@@ -125,6 +142,14 @@ Vue.component('new-input', {
         handleValidValues: function(validValuesString) {
             /* Create an array out of a semi-colon delimited string given for the valid values. */
             return validValuesString.split(";").map(x => x.trim());
+        },
+        handleDefaultValues: function(defaultString) {
+            /* Check to see if the given, default value should be converted to a number or not. */
+            if (Number(defaultString)) {
+                return Number(defaultString);
+            } else {
+                return defaultString;
+            }
         },
         resetValues: function() {
             /* Reset the values of every entry. */
@@ -144,6 +169,17 @@ Vue.component('new-input', {
                 if (this.inputFields[i].value !== this.inputFields[i].defaultValue || this.inputFields[i].keepIfDefault) {
                     if (this.inputFields[i].name === 'validValues') {
                         inputObject[this.inputFields[i].name] = this.handleValidValues(this.inputFields[i].value);
+                    } else if (this.inputFields[i].name.split(" (")[0] === 'default') {
+                        // check to make sure there is not already a default value
+                        if (inputObject['default']) {
+                            $.jGrowl('There is already a default value. Two default values cannot be added.', {group: 'warning-growl'});
+                        } else {
+                            if (this.inputFields[i].value === true) {
+                                inputObject[this.inputFields[i].name.split(" (")[0]] = this.inputFields[i].value;
+                            } else {
+                                inputObject[this.inputFields[i].name.split(" (")[0]] = this.handleDefaultValues(this.inputFields[i].value);
+                            }
+                        }
                     } else {
                         inputObject[this.inputFields[i].name] = this.inputFields[i].value;
                     }
@@ -182,6 +218,7 @@ Vue.component('new-output', {
             type: 'text',
             value: '',
             defaultValue: '',
+            help: 'This is the name of the output variable that will be made available to downstream apps.'
         }, {
             name: 'type',
             required: true,
@@ -189,6 +226,7 @@ Vue.component('new-output', {
             value: 'String',
             defaultValue: 'String',
             possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
+            help: 'This specifies the type of the output variable. Depending on which type you choose, it can limit which downstream apps have access to the variable.'
         }],
       };
     },
