@@ -3,7 +3,7 @@ Vue.component('new-input', {
         <div>
             <form id="input-form">
                 <div v-for="input in inputFields">
-                    <label>{{ input.name }}: <span v-if=input.required style="color: red;">*</span>
+                    <label><span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 :title="input.help">{{ input.name }}</span>: <span v-if=input.required style="color: red;">*</span>
                     <input v-if="!input.possibleValues" :type=input.type name="label" v-model="input.value">
                     <select v-if="input.multiple" v-model="input.value" multiple>
                       <option v-for="option in input.possibleValues">{{ option }}</option>
@@ -17,6 +17,7 @@ Vue.component('new-input', {
         </div>
     `,
     data: function () {
+      // TODO: add 'help' entries for each inputFields
       return {
         inputFields: [{
             name: 'label',
@@ -163,7 +164,11 @@ Vue.component('new-output', {
         <div>
             <form id="output-form">
                 <div v-for="output in outputFields">
-                    <label>{{ output.name }}: <span v-if=output.required style="color: red;">*</span><input :type=output.type name="label" v-model=output.value></label>
+                    <label><span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 :title="output.help">{{ output.name }}</span>: <span v-if=output.required style="color: red;">*</span>
+                    <input v-if="!output.possibleValues" :type=output.type name="label" v-model="output.value">
+                    <select v-if="output.possibleValues && !output.multiple" v-model="output.value">
+                      <option v-for="option in output.possibleValues">{{ option }}</option>
+                    </select></label>
                 </div>
             </form>
             <button class="button secondary" v-on:click="addOutputVariable">Add parameter</button>
@@ -177,12 +182,13 @@ Vue.component('new-output', {
             type: 'text',
             value: '',
             defaultValue: '',
-        }, {// TODO: add better handling for type
+        }, {
             name: 'type',
             required: true,
             type: 'text',
-            value: '',
-            defaultValue: '',
+            value: 'String',
+            defaultValue: 'String',
+            possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
         }],
       };
     },
