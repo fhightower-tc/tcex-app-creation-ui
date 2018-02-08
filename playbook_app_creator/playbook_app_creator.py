@@ -58,14 +58,16 @@ def prepare_tcex_app(request):
     parameters_string = str()
 
     for parameter in parameters:
-        parameters_string += "tcex.parser.add_argument('--{}', help='{}')".format(parameter['name'], parameter['label'])
+        if not parameter.get('required'):
+            parameter['required'] = False
+        parameters_string += "tcex.parser.add_argument('--{}', help='{}', required={})".format(parameter['name'], parameter['label'], parameter['required'])
 
     # handle output variables
     output_variables = json.loads(request.args['outputVariables'])
     outputVariableString = str()
 
     for variable in output_variables:
-        outputVariableString += "tcex.playbook.create_output({}, TODO: add a value here)".format(variable['name']) + "\n"
+        outputVariableString += "tcex.playbook.create_output('{}', TODO: add a value here)".format(variable['name']) + "\n"
 
     app_template = app_template.format(outputVariableString, parameters_string)
 

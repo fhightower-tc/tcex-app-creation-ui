@@ -8,7 +8,6 @@ from tcex import TcEx
 
 def parse_arguments():
     """Parse arguments coming into the app."""
-    # retrieve the string as an argument
     {1}
     return tcex.args
 
@@ -18,9 +17,7 @@ def main():
     # handle the incoming arguments
     args = parse_arguments()
 
-    # TODO: Add your code below!
-
-    # output the reversed string to downstream playbook apps
+    # TODO: Add your code below
     {0}
     # exit
     tcex.exit()

@@ -32,9 +32,9 @@ def _test_install_json(response):
             raise AssertionError("Unable to find {} in {}".format(string, response))
 
 
-def _test_app(response):
+def _test_app(response, required=False):
     """Make sure there is a code block in the response."""
-    strings = ['# -*- coding: utf-8 -*-', 'from tcex import TcEx', 'def main():', 'if __name__ == &#34;__main__&#34;:', "tcex.parser.add_argument(&#39;--b&#39;, help=&#39;a&#39;)", 'tcex.playbook.create_output(output1, TODO: add a value here)', ]
+    strings = ['# -*- coding: utf-8 -*-', 'from tcex import TcEx', 'def main():', 'if __name__ == &#34;__main__&#34;:', "tcex.parser.add_argument(&#39;--b&#39;, help=&#39;a&#39;, required={})".format(required), "tcex.playbook.create_output(&#39;output1&#39;, TODO: add a value here)"]
 
     for string in strings:
         try:
@@ -74,6 +74,14 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('test_app.py', rv.data.decode())
         # validate that outputs are shown
         _test_app(rv.data.decode())
+
+    def test_app_output_with_required_parameter(self):
+        """Make sure the app created by the app is correct."""
+        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Atrue%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        _test_heading(rv.data.decode())
+        self.assertIn('test_app.py', rv.data.decode())
+        # validate that outputs are shown
+        _test_app(rv.data.decode(), True)
 
 
 class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
