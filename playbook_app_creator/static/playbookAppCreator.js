@@ -54,6 +54,16 @@ Vue.component('new-input', {
                 return true;
             },
         }, {
+            name: 'required',
+            required: false,
+            type: 'checkbox',
+            value: false,
+            defaultValue: false,
+            help: 'Choose to make the input parameter required.',
+            condition: function() {
+                return true;
+            }
+        }, {
             name: 'default (as a boolean)',
             required: false,
             type: 'checkbox',
@@ -81,20 +91,9 @@ Vue.component('new-input', {
             defaultValue: false,
             help: 'Choose to encrypt the input value (useful for passwords, API keys, and other sensitive values).',
             condition: function() {
-                showIfValues = ['String', undefined];
+                showIfValues = ['String', 'StringMixed', undefined];
                 compareValue = $('#type-field').val();
-
                 return showIfValues.indexOf(compareValue) !== -1;
-            }
-        }, {
-            name: 'required',
-            required: false,
-            type: 'checkbox',
-            value: false,
-            defaultValue: false,
-            help: 'Choose to make the input parameter required.',
-            condition: function() {
-                return true;
             }
         }, {
             name: 'validValues',
@@ -103,6 +102,18 @@ Vue.component('new-input', {
             value: '',
             defaultValue: '',
             help: 'This limits the number of possible values for this input parameter. If you want to have multiple values, separate them with a semi-colon (";").',
+            condition: function() {
+                return true;
+            }
+        }, {
+            name: 'playbookDataType',
+            required: false,
+            type: 'text',
+            value: ['String'],
+            defaultValue: ['String'],
+            possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
+            multiple: true,
+            help: 'Specify the type of the input data as viewed from the playbook. This limits the variables which can be used as values for this parameter.',
             condition: function() {
                 return true;
             }
@@ -134,19 +145,6 @@ Vue.component('new-input', {
             type: 'text',
             value: '',
             defaultValue: '',
-            // TODO: not sure what this value does (3)
-            help: 'Not sure what this does yet...',
-            condition: function() {
-                return true;
-            }
-        }, {
-            name: 'playbookDataType',
-            required: false,
-            type: 'text',
-            value: '',
-            defaultValue: '',
-            possibleValues: ['Any', 'Binary', 'BinaryArray', 'KeyValue', 'KeyValueArray', 'String', 'StringArray', 'TCEntity', 'TCEntityArray'],
-            multiple: true,
             // TODO: not sure what this value does (3)
             help: 'Not sure what this does yet...',
             condition: function() {
