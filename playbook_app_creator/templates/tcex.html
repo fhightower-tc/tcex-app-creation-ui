@@ -1,15 +1,38 @@
 (% extends "layout.html" %)
 (% block content %)
 
-<div>
-    <div class="columns large-4">
-        <h1>install.json</h1>
-        <pre style="background-color: lightgrey;">(( install_json|safe ))</pre>
-    </div>
-    <div class="columns large-8">
-        <h1>(( app_name )).py</h1>
-        <pre style="background-color: lightgrey;">(( app ))</pre>
-    </div>
+<div class="row">
+    <h2>(( app_name|title )) App</h2>
+
+    Great! The app has been created. Click the button below to download a .zip file containing the playbook app.
+
+    <br><br>
+
+    <button class="button blue">Download the app</button>
+    <button class="button secondary" disabled><span data-tooltip class="has-tip" tabindex=1 title="THIS FUNCTIONALITY IS COMING SOON. Clicking this button will submit this playbook as a pull request to https://github.com/ThreatConnect-Inc/threatconnect-playbooks.">Submit to github repo</span></button>
+
+    <hr>
+
+    <ul class="vertical menu" data-accordion-menu>
+      <li>
+        <a href="#">View install.json</a>
+        <ul style="background-color: lightgrey;">
+            <pre>(( install_json|safe ))</pre>
+        </ul>
+      </li>
+      <li>
+        <a href="#">View (( app_name )).py</a>
+        <ul style="background-color: lightgrey;">
+            <pre>(( app ))</pre>
+        </ul>
+      </li>
+    </ul>
 </div>
+
+<br><br>
+
+<script type="text/javascript">
+    $(document).foundation();
+</script>
 
 (% endblock %)

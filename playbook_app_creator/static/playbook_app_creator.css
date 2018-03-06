@@ -35,6 +35,10 @@ a {
     text-decoration: underline;
 }
 
+.button {
+    font-weight: bold;
+}
+
 .error {
     color: red;
 }
