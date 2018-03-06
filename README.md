@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/fhightower/playbook-app-creator.svg?branch=master)](https://travis-ci.org/fhightower/playbook-app-creator)
 
-App to aid the creation of playbook apps for ThreatConnect.
+Create a ThreatConnect Playbook app!
 
 ## Quick Start
 
