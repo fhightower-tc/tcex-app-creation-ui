@@ -31,7 +31,8 @@ def index():
 @app.route("/app-details")
 def get_app_details():
     if request.args.get('appName'):
-        return render_template("app-details.html", app_name=request.args['appName'])
+        app_name = request.args['appName'].replace(" ", "_").replace("-", "_")
+        return render_template("app-details.html", app_name=app_name)
     else:
         flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
@@ -41,7 +42,6 @@ def prepare_install_json(request):
     """Prepare the install.json with the correct parameters and output variables."""
     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/install.json.template"))) as f:
         install_json_template = f.read()
-
     install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables'], request.args['appName']))
     return json.dumps(install_json, indent=4)
 

@@ -59,6 +59,10 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('Logic', rv.data.decode())
         self.assertIn('Output Variables', rv.data.decode())
 
+    def test_name_with_space(self):
+        rv = self.app.get('/app-details?appName=test app')
+        self.assertIn('value="test_app"', rv.data.decode())
+
     def test_install_json_output(self):
         """Make sure the install.json created by the app is correct."""
         rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
