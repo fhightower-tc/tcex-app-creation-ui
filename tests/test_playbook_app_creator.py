@@ -11,7 +11,7 @@ from playbook_app_creator import playbook_app_creator
 
 def _test_heading(response):
     """Make sure the heading is correct."""
-    assert 'Playbook App Creator' in response
+    assert 'TCEX App Creation UI' in response
     assert 'Create a ThreatConnect Playbook app!' in response
 
 
