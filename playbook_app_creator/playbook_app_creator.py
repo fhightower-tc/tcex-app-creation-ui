@@ -79,7 +79,6 @@ def tcex():
     if request.args.get('appName') and request.args.get('parameters') and request.args.get('outputVariables'):
         install_json = prepare_install_json(request).replace('\n', '<br>').replace(' ', '&nbsp;')
         app = prepare_tcex_app(request)
-
         return render_template('tcex.html', install_json=install_json, app=app, app_name=request.args['appName'])
     else:
         flash('Please enter a name for this app.', 'error')
