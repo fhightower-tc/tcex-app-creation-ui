@@ -92,13 +92,13 @@ def package_app(app_name):
     try:
         cookiecutter('https://github.com/fhightower-templates/tcex-app-template.git', no_input=True, extra_context=context_data, output_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/")))
     except OutputDirExistsException:
-        # TODO: there may be a better way to handle an existing directory, but this will suffice for now
+        # TODO: there may be a better way to handle an existing directory (we may want to warn the user or force them to use a different name), but this will suffice for now
         existing_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}".format(app_name)))
         shutil.rmtree(existing_dir, ignore_errors=True)
         package_app(app_name)
 
 
-def update_app(app_name, parameters, output_variables, new_app):
+def update_app(app_name, parameters, output_variables, python_file):
     """Update the install.json and the python app."""
     # replace the install.json with the updated version
     install_json_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/install.json".format(app_name, app_name)))
@@ -109,8 +109,10 @@ def update_app(app_name, parameters, output_variables, new_app):
     with open(install_json_file_path, 'w') as f:
         json.dump(install_json, f)
 
-    # replace the new_app with the updated version
-    # TODO: implement...
+    # replace the python_file with the updated version
+    python_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/{}.py".format(app_name, app_name, app_name)))
+    with open(python_file_path, 'r') as f:
+        python_file = f.read()
 
     # zip the new app
     top_level_app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/".format(app_name)))
@@ -121,11 +123,10 @@ def update_app(app_name, parameters, output_variables, new_app):
 def tcex():
     if request.args.get('appName') and request.args.get('parameters') and request.args.get('outputVariables'):
         install_json = prepare_install_json(request).replace('\n', '<br>').replace(' ', '&nbsp;')
-        # new_app = prepare_tcex_app(request)
-        new_app = ''
+        python_file = ''
         package_app(request.args['appName'])
-        update_app(request.args['appName'], request.args['parameters'], request.args['outputVariables'], '')
-        return render_template('tcex.html', install_json=install_json, app=new_app, app_name=request.args['appName'])
+        update_app(request.args['appName'], request.args['parameters'], request.args['outputVariables'], python_file)
+        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.args['appName'])
     else:
         flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
