@@ -41,42 +41,6 @@ def get_app_details():
         return redirect(url_for('index'))
 
 
-# def prepare_install_json(request):
-#     """Prepare the install.json with the correct parameters and output variables."""
-#     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/install.json.template"))) as f:
-#         install_json_template = f.read()
-#     install_json = json.loads(install_json_template % (request.args['parameters'], request.args['outputVariables'], request.args['appName']))
-#     return json.dumps(install_json, indent=4)
-
-
-# def prepare_tcex_app(request):
-#     """Prepare the python app with the correct parameters and output variables."""
-#     app_template = None
-
-#     with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "./templates/playbook_app.template"))) as f:
-#         app_template = f.read()
-
-#     # handle input variables
-#     parameters = json.loads(request.args['parameters'])
-#     parameters_string = str()
-
-#     for parameter in parameters:
-#         if not parameter.get('required'):
-#             parameter['required'] = False
-#         parameters_string += "tcex.parser.add_argument('--{}', help='{}', required={})".format(parameter['name'], parameter['label'], parameter['required'])
-
-#     # handle output variables
-#     output_variables = json.loads(request.args['outputVariables'])
-#     outputVariableString = str()
-
-#     for variable in output_variables:
-#         outputVariableString += "tcex.playbook.create_output('{}', TODO: add a value here)".format(variable['name']) + "\n"
-
-#     app_template = app_template.format(outputVariableString, parameters_string)
-
-#     return app_template
-
-
 def create_app_from_template(app_name):
     """Create a tcex app."""
     context_data = {
