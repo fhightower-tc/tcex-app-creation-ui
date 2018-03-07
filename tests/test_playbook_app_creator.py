@@ -23,7 +23,7 @@ def _test_index(response):
 
 def _test_install_json(response):
     """Make sure there is a code block in the response."""
-    strings = ['"type":&nbsp;"String",', '"name":&nbsp;"b",', '"label":&nbsp;"a"', '"type":&nbsp;"String",', '"name":&nbsp;"output1"', '"programMain":&nbsp;"test_app",']
+    strings = ['"type": "String",', '"name": "b",', '"label": "a"', '"type": "String",', '"name": "output1"', '"programMain": "test_app",']
 
     for string in strings:
         try:
@@ -61,6 +61,10 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
 
     def test_name_with_space(self):
         rv = self.app.get('/app-details?appName=test app')
+        self.assertIn('value="test_app"', rv.data.decode())
+
+    def test_name_with_uupercase(self):
+        rv = self.app.get('/app-details?appName=Test App')
         self.assertIn('value="test_app"', rv.data.decode())
 
     def test_install_json_output(self):
