@@ -31,6 +31,9 @@ def _test_install_json(response):
         except AssertionError:
             raise AssertionError("Unable to find {} in {}".format(string, response))
 
+    # check to make sure the install.json is pretty-printed
+    assert '"programLanguage": "python",\n    "programMain"' in response
+
 
 def _test_app(response, required=False):
     """Make sure there is a code block in the response."""

@@ -253,7 +253,7 @@ Vue.component('new-output', {
                     </select></label>
                 </div>
             </form>
-            <button class="button secondary" v-on:click="addOutputVariable">Add parameter</button>
+            <button class="button secondary" v-on:click="addOutputVariable">Add output variable</button>
         </div>
     `,
     data: function () {
