@@ -95,6 +95,7 @@ def create_app_from_template(app_name):
         # TODO: there may be a better way to handle an existing directory (we may want to warn the user or force them to use a different name), but this will suffice for now
         existing_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}".format(app_name)))
         shutil.rmtree(existing_dir, ignore_errors=True)
+        # TODO: do we also need to remove the .zip file?
         create_app_from_template(app_name)
 
 
@@ -105,7 +106,7 @@ def _update_install_json(install_json_dict, parameters, output_variables):
     return install_json_dict
 
 
-def _update_python_file(python_file_text, parameters, output_variables):
+def _update_python_file(python_file_text, parameters, output_variables, app_name):
     """Update the python file that will contain the code for the app."""
     # handle input variables
     parameters = json.loads(request.args['parameters'])
@@ -124,7 +125,7 @@ def _update_python_file(python_file_text, parameters, output_variables):
         output_variables_string += "tcex.playbook.create_output('{}', TODO: add a value here)".format(variable['name']) + "\n"
 
     python_file_text = python_file_text.replace("tcex.parser.add_argument('--string', help='Input string', required=True)", parameters_string)
-    python_file_text = python_file_text.replace("# output the reversed string to downstream playbook apps\n    tcex.playbook.create_output('test_app.reversed_string', string[::-1])", output_variables_string)
+    python_file_text = python_file_text.replace("# output the reversed string to downstream playbook apps\n    tcex.playbook.create_output('{}.reversed_string', string[::-1])".format(app_name), output_variables_string)
 
     return python_file_text
 
@@ -143,7 +144,7 @@ def update_app(app_name, parameters, output_variables):
     python_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/{}.py".format(app_name, app_name, app_name)))
     with open(python_file_path, 'r') as f:
         python_file = f.read()
-    updated_python_file = _update_python_file(python_file, parameters, output_variables)
+    updated_python_file = _update_python_file(python_file, parameters, output_variables, app_name)
     with open(python_file_path, 'w') as f:
         f.write(updated_python_file)
 
