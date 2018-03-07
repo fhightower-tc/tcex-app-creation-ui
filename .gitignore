@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Custom additions
+playbook_app_creator/static/apps/
+!playbook_app_creator/static/apps/placeholder.txt
