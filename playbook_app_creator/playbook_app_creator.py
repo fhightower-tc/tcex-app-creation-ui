@@ -143,15 +143,15 @@ def update_app(app_name, parameters, output_variables):
     python_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/{}.py".format(app_name, app_name, app_name)))
     with open(python_file_path, 'r') as f:
         python_file = f.read()
-    updated_python_app = _update_python_file(python_file, parameters, output_variables)
+    updated_python_file = _update_python_file(python_file, parameters, output_variables)
     with open(python_file_path, 'w') as f:
-        f.write(updated_python_app)
+        f.write(updated_python_file)
 
     # zip the new app
     top_level_app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/".format(app_name)))
-    shutil.make_archive(top_level_app_path, 'zip')
+    shutil.make_archive(top_level_app_path, 'zip', top_level_app_path)
 
-    return json.dumps(install_json, indent=4), updated_python_app
+    return json.dumps(install_json, indent=4), updated_python_file
 
 
 @app.route("/tcex")
