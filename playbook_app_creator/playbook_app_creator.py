@@ -64,16 +64,14 @@ def create_app_from_template(app_name):
 
 
 def _update_install_json(install_json_dict, parameters, output_variables):
-    """Update the install.json."""
-    install_json_dict['params'] = json.loads(parameters)
-    install_json_dict['playbook']['outputVariables'] = json.loads(output_variables)
+    install_json_dict['params'] = parameters
+    install_json_dict['playbook']['outputVariables'] = output_variables
     return install_json_dict
 
 
 def _update_python_file(python_file_text, parameters, output_variables, app_name):
     """Update the python file that will contain the code for the app."""
     # handle input variables
-    parameters = json.loads(request.args['parameters'])
     parameters_string = str()
 
     for parameter in parameters:
@@ -82,7 +80,6 @@ def _update_python_file(python_file_text, parameters, output_variables, app_name
         parameters_string += "tcex.parser.add_argument('--{}', help='{}', required={})".format(parameter['name'], parameter['label'], parameter['required'])
 
     # handle output variables
-    output_variables = json.loads(request.args['outputVariables'])
     output_variables_string = str()
 
     for variable in output_variables:
@@ -94,9 +91,23 @@ def _update_python_file(python_file_text, parameters, output_variables, app_name
     return python_file_text
 
 
+def _update_readme(readme_text, parameters, output_variables):
+    # TODO: we may want to use the 'note' field for the parameter if it has one
+    parameters_string = ['- `{}` *({})*: {}'.format(parameter['name'], parameter['type'], parameter['label']) for parameter in parameters]
+    output_variables_string = ['- `{}` *({})*'.format(output_variable['name'], output_variable['type']) for output_variable in output_variables]
+
+    readme_text = readme_text.replace('Todo: add input definitions', '\n'.join(parameters_string))
+    readme_text = readme_text.replace('Todo: add output definitions', '\n'.join(output_variables_string))
+
+    return readme_text
+
+
 def update_app(app_name, parameters, output_variables):
-    """Update the install.json and the python app."""
-    # replace the install.json with the updated version
+    """Update the files in the template with the parameters and output variables."""
+    parameters = json.loads(parameters)
+    output_variables = json.loads(output_variables)
+
+    # update install.json
     install_json_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/install.json".format(app_name, app_name)))
     with open(install_json_file_path, 'r') as f:
         install_json = json.load(f)
@@ -104,13 +115,21 @@ def update_app(app_name, parameters, output_variables):
     with open(install_json_file_path, 'w') as f:
         json.dump(install_json, f)
 
-    # replace the python_file with the updated version
+    # update the python file
     python_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/{}/{}.py".format(app_name, app_name, app_name)))
     with open(python_file_path, 'r') as f:
         python_file = f.read()
     updated_python_file = _update_python_file(python_file, parameters, output_variables, app_name)
     with open(python_file_path, 'w') as f:
         f.write(updated_python_file)
+
+    # update readme.md
+    readme_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/README.md".format(app_name)))
+    with open(readme_file_path, 'r') as f:
+        readme = f.read()
+    updated_readme = _update_readme(readme, parameters, output_variables)
+    with open(readme_file_path, 'w') as f:
+        f.write(updated_readme)
 
     # zip the new app
     top_level_app_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}/".format(app_name)))
