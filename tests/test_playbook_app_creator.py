@@ -17,7 +17,7 @@ def _test_heading(response):
 
 def _test_index(response):
     """Make sure the index page is shown."""
-    assert 'Welcome!' in response
+    assert 'Create a TCEX app' in response
     _test_heading(response)
 
 

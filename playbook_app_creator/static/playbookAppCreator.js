@@ -246,6 +246,12 @@ Vue.component('new-output', {
         <div>
             <form id="output-form">
                 <div v-for="output in outputFields">
+                    <div class="callout warning" v-if="output.value.indexOf(' ') !== -1">
+                      <p>Please give a variable name with <b> no spaces</b>. I recommend using <b>dot notation</b> or <b>camelCase</b> for the output variable's name (e.g. parser.Domain or parsedDomain).</p>
+                    </div>
+                    <div class="callout secondary" v-if="output.value.indexOf('_') !== -1">
+                      <p>I see you have an underscore ("_") in your variable name. You can use an underscore, but <b>I recommend using dot notation or camelCase</b> for the output variable's name (e.g. parser.Domain or parsedDomain).</p>
+                    </div>
                     <label><span data-tooltip aria-haspopup="true" class="has-tip" data-disable-hover='false' tabindex=1 :title="output.help">{{ output.name }}</span>: <span v-if=output.required style="color: red;"><b>*</b></span>
                     <input v-if="!output.possibleValues" :type=output.type name="label" v-model="output.value">
                     <select v-if="output.possibleValues && !output.multiple" v-model="output.value">
@@ -302,6 +308,7 @@ Vue.component('new-output', {
             var outputObject = {};
 
             for (var i = this.outputFields.length - 1; i >= 0; i--) {
+                this.outputFields[i].value = this.outputFields[i].value.replace(/ (\S)/g, '$1')
                 outputObject[this.outputFields[i].name] = this.outputFields[i].value;
             }
 
