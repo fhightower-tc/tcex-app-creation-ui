@@ -73,15 +73,26 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
 
     def test_install_json_output(self):
         """Make sure the install.json created by the app is correct."""
-        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        # rv = self.app.get('/tcex?appName=test_app&submit=Submit')
+        rv = self.app.post('/tcex?appName=test_app', data={
+            'parameters': '[{"validValues":"","required":false,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app'
+        })
+        assert rv.status_code == 200
         _test_heading(rv.data.decode())
         self.assertIn('install.json', rv.data.decode())
         # validate that inputs are shown
         _test_install_json(rv.data.decode())
 
-    def test_app_output(self):
+    def test_python_file(self):
         """Make sure the app created by the app is correct."""
-        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Afalse%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":false,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app'
+        })
+        assert rv.status_code == 200
         _test_heading(rv.data.decode())
         self.assertIn('test_app.py', rv.data.decode())
         # validate that outputs are shown
@@ -89,7 +100,13 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
 
     def test_app_output_with_required_parameter(self):
         """Make sure the app created by the app is correct."""
-        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Atrue%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        # rv = self.app.get('/tcex?parameters=&outputVariables=&appName=test_app&submit=Submit')
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":true,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app'
+        })
+        assert rv.status_code == 200
         _test_heading(rv.data.decode())
         self.assertIn('test_app.py', rv.data.decode())
         # validate that outputs are shown
@@ -103,7 +120,12 @@ class CreatedAppFilesTestCases(unittest.TestCase):
 
     def test_readme_credits(self):
         """Make sure the credits in the readme are correct."""
-        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Atrue%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":true,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app'
+        })
+        assert rv.status_code == 200
         with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../playbook_app_creator/static/apps/test_app/README.md")), 'r') as f:
             readme_text = f.read()
             assert "[Cookiecutter](https://github.com/audreyr/cookiecutter) and [Floyd Hightower's TCEX App Creation UI](http://tcex.hightower.space)" in readme_text
@@ -114,7 +136,7 @@ class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
     def setUp(self):
         self.app = playbook_app_creator.app.test_client()
 
-    def test_get_inputs_without_arguments(self):
+    def test_app_details_without_arguments(self):
         """This should redirect back to the index."""
         rv = self.app.get('/app-details', follow_redirects=True)
         _test_index(rv.data.decode())
@@ -122,6 +144,6 @@ class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
 
     def test_tcex_without_arguments(self):
         """This should redirect to the index."""
-        rv = self.app.get('/tcex', follow_redirects=True)
+        rv = self.app.post('/tcex', follow_redirects=True)
         _test_index(rv.data.decode())
         assert 'Please enter a name for this app.' in rv.data.decode()

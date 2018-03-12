@@ -23,7 +23,7 @@
     <div class="clearfix"></div>
 
     <div class="row">
-        <form action="(( url_for('tcex') ))" class="float-right">
+        <form action="(( url_for('tcex') ))" method="POST" class="float-right">
             <input type="input" name="parameters" :value="JSON.stringify(parameters)" hidden="hidden" >
             <input type="input" name="outputVariables" :value="JSON.stringify(outputVariables)" hidden="hidden"/>
             <input type="input" name="appName" value="(( app_name ))" hidden="hidden"/>

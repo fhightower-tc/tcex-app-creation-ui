@@ -139,12 +139,12 @@ def update_app(app_name, parameters, output_variables):
     return json.dumps(install_json, indent=4), updated_python_file
 
 
-@app.route("/tcex")
+@app.route("/tcex", methods=['POST'])
 def tcex():
-    if request.args.get('appName') and request.args.get('parameters') and request.args.get('outputVariables'):
-        create_app_from_template(request.args['appName'])
-        install_json, python_file = update_app(request.args['appName'], request.args['parameters'], request.args['outputVariables'])
-        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.args['appName'])
+    if request.form.get('appName') and request.form.get('parameters') and request.form.get('outputVariables'):
+        create_app_from_template(request.form['appName'])
+        install_json, python_file = update_app(request.form['appName'], request.form['parameters'], request.form['outputVariables'])
+        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.form['appName'])
     else:
         flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
