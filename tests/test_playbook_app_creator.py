@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import html
+import os
 import unittest
 
 from flask import url_for
@@ -93,6 +94,19 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         self.assertIn('test_app.py', rv.data.decode())
         # validate that outputs are shown
         _test_app(rv.data.decode(), True)
+
+
+class CreatedAppFilesTestCases(unittest.TestCase):
+
+    def setUp(self):
+        self.app = playbook_app_creator.app.test_client()
+
+    def test_readme_credits(self):
+        """Make sure the credits in the readme are correct."""
+        rv = self.app.get('/tcex?parameters=%5B%7B"validValues"%3A""%2C"required"%3Atrue%2C"playbookDataType"%3A"String"%2C"note"%3A""%2C"hidden"%3Afalse%2C"encrypt"%3Afalse%2C"default"%3Afalse%2C"allowMultiple"%3Afalse%2C"type"%3A"String"%2C"name"%3A"b"%2C"label"%3A"a"%7D%5D&outputVariables=%5B%7B"type"%3A"String"%2C"name"%3A"output1"%7D%5D&appName=test_app&submit=Submit')
+        with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../playbook_app_creator/static/apps/test_app/README.md")), 'r') as f:
+            readme_text = f.read()
+            assert "[Cookiecutter](https://github.com/audreyr/cookiecutter) and [Floyd Hightower's TCEX App Creation UI](http://tcex.hightower.space)" in readme_text
 
 
 class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
