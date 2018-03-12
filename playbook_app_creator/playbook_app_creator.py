@@ -98,6 +98,7 @@ def _update_readme(readme_text, parameters, output_variables):
 
     readme_text = readme_text.replace('Todo: add input definitions', '\n'.join(parameters_string))
     readme_text = readme_text.replace('Todo: add output definitions', '\n'.join(output_variables_string))
+    readme_text = readme_text.replace("This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and [Floyd Hightower's TCEX App Template](https://github.com/fhightower-templates/tcex-app-template).", "This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and [Floyd Hightower's TCEX App Creation UI](http://tcex.hightower.space).")
 
     return readme_text
 
