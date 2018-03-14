@@ -28,26 +28,42 @@ app.secret_key = 'abc'
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    app_name = request.args.get('appName')
+    app_description = request.args.get('appDescription')
+
+    if app_name is None:
+        app_name = ''
+    if app_description is None:
+        app_description = ''
+
+    return render_template("index.html", app_name=app_name, app_description=app_description)
 
 
 @app.route("/app-details")
 def get_app_details():
-    if request.args.get('appName'):
-        app_name = request.args['appName'].lower().replace(" ", "_").replace("-", "_")
-        return render_template("app-details.html", app_name=app_name)
-    else:
+    proceed = True
+    if not request.args.get('appName'):
         flash('Please enter a name for this app.', 'error')
-        return redirect(url_for('index'))
+        proceed = False
+
+    if not request.args.get('appDescription'):
+        flash('Please enter a description for this app.', 'error')
+        proceed = False
+
+    if proceed:
+        app_name = request.args['appName'].lower().replace(" ", "_").replace("-", "_")
+        return render_template("app-details.html", app_name=app_name, display_name=request.args['appName'], description=request.args['appDescription'])
+    else:
+        return redirect(url_for('index', appName=request.args.get('appName'), appDescription=request.args.get('appDescription')))
 
 
-def create_app_from_template(app_name):
+def create_app_from_template(app_name, display_name, description):
     """Create a tcex app."""
     context_data = {
         'author_name': '',
-        'project_name': app_name,
+        'project_name': display_name,
         'project_slug': app_name,
-        'project_description': '',
+        'project_description': description,
         'version': '0.1.0',
         'runtime_level': 'Playbook',
         'open_source_license': 'Not open source'
@@ -60,7 +76,7 @@ def create_app_from_template(app_name):
         existing_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}".format(app_name)))
         shutil.rmtree(existing_dir, ignore_errors=True)
         # TODO: do we also need to remove the .zip file?
-        create_app_from_template(app_name)
+        create_app_from_template(app_name, display_name, description)
 
 
 def _update_install_json(install_json_dict, parameters, output_variables):
@@ -141,10 +157,10 @@ def update_app(app_name, parameters, output_variables):
 
 @app.route("/tcex", methods=['POST'])
 def tcex():
-    if request.form.get('appName') and request.form.get('parameters') and request.form.get('outputVariables'):
-        create_app_from_template(request.form['appName'])
+    if request.form.get('appName') and request.form.get('parameters') and request.form.get('outputVariables') and request.form.get('description') and request.form.get('displayName'):
+        create_app_from_template(request.form['appName'], request.form['displayName'], request.form['description'])
         install_json, python_file = update_app(request.form['appName'], request.form['parameters'], request.form['outputVariables'])
-        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.form['appName'])
+        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.form['appName'], display_name=request.form['displayName'])
     else:
         flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
