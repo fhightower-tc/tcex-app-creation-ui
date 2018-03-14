@@ -1,3 +1,4 @@
 cookiecutter
 Flask
 gunicorn
+pytest
