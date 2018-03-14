@@ -7,5 +7,5 @@ venv:
 run:
 	~/.virtualenvs/playbook_app_creator/bin/python playbook_app_creator/playbook_app_creator.py
 
-test:
+test: clean
 	~/.virtualenvs/playbook_app_creator/bin/python -m pytest
