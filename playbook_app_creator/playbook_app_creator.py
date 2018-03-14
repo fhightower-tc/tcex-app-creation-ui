@@ -52,12 +52,12 @@ def get_app_details():
 
     if proceed:
         app_name = request.args['appName'].lower().replace(" ", "_").replace("-", "_")
-        return render_template("app-details.html", app_name=app_name, display_name=request.args['appName'], description=request.args['appDescription'])
+        return render_template("app-details.html", app_name=app_name, display_name=request.args['appName'], description=request.args['appDescription'], jobsApp=request.args.get('jobsApp'))
     else:
         return redirect(url_for('index', appName=request.args.get('appName'), appDescription=request.args.get('appDescription')))
 
 
-def create_app_from_template(app_name, display_name, description):
+def create_app_from_template(app_name, display_name, description, package_as_jobs_app):
     """Create a tcex app."""
     context_data = {
         'author_name': '',
@@ -69,6 +69,10 @@ def create_app_from_template(app_name, display_name, description):
         'open_source_license': 'Not open source'
     }
 
+    # if this is a jobs app, package it appropriately
+    if package_as_jobs_app:
+        context_data['runtime_level'] = 'Organization'
+
     try:
         cookiecutter('https://github.com/fhightower-templates/tcex-app-template.git', no_input=True, extra_context=context_data, output_dir=os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/")))
     except OutputDirExistsException:
@@ -76,12 +80,13 @@ def create_app_from_template(app_name, display_name, description):
         existing_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "./static/apps/{}".format(app_name)))
         shutil.rmtree(existing_dir, ignore_errors=True)
         # TODO: do we also need to remove the .zip file?
-        create_app_from_template(app_name, display_name, description)
+        create_app_from_template(app_name, display_name, description, package_as_jobs_app)
 
 
 def _update_install_json(install_json_dict, parameters, output_variables):
     install_json_dict['params'] = parameters
-    install_json_dict['playbook']['outputVariables'] = output_variables
+    if install_json_dict.get('playbook'):
+        install_json_dict['playbook']['outputVariables'] = output_variables
     return install_json_dict
 
 
@@ -158,7 +163,11 @@ def update_app(app_name, parameters, output_variables):
 @app.route("/tcex", methods=['POST'])
 def tcex():
     if request.form.get('appName') and request.form.get('parameters') and request.form.get('outputVariables') and request.form.get('description') and request.form.get('displayName'):
-        create_app_from_template(request.form['appName'], request.form['displayName'], request.form['description'])
+        if request.form['jobsApp'] == 'on':
+            package_as_jobs_app = True
+        else:
+            package_as_jobs_app = False
+        create_app_from_template(request.form['appName'], request.form['displayName'], request.form['description'], package_as_jobs_app)
         install_json, python_file = update_app(request.form['appName'], request.form['parameters'], request.form['outputVariables'])
         return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.form['appName'], display_name=request.form['displayName'])
     else:

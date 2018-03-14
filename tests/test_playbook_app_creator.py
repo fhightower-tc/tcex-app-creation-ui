@@ -38,6 +38,8 @@ def _test_install_json(response, app_description):
         except AssertionError:
             raise AssertionError("Unable to find {} in {}".format(string, response))
 
+    assert '"runtimeLevel": "Playbook"' in response
+
     # check to make sure the install.json is pretty-printed
     assert '"programLanguage": "python",\n    "programMain"' in response
     _test_app_description(response, app_description)
@@ -88,7 +90,8 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
             'outputVariables': '[{"type":"String","name":"output1"}]',
             'appName': 'test_app',
             'description': app_description,
-            'displayName': 'Test App'
+            'displayName': 'Test App',
+            'jobsApp': 'None'
         })
         assert rv.status_code == 200
         _test_heading(rv.data.decode())
@@ -104,7 +107,8 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
             'outputVariables': '[{"type":"String","name":"output1"}]',
             'appName': 'test_app',
             'description': app_description,
-            'displayName': 'Test App'
+            'displayName': 'Test App',
+            'jobsApp': 'None'
         })
         assert rv.status_code == 200
         _test_heading(rv.data.decode())
@@ -120,13 +124,57 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
             'outputVariables': '[{"type":"String","name":"output1"}]',
             'appName': 'test_app',
             'description': app_description,
-            'displayName': 'Test App'
+            'displayName': 'Test App',
+            'jobsApp': 'None'
         })
         assert rv.status_code == 200
         _test_heading(rv.data.decode())
         self.assertIn('test_app.py', rv.data.decode())
         # validate that outputs are shown
         _test_python_file(rv.data.decode(), app_description, True)
+
+
+class JobsAppCreationTestCases(unittest.TestCase):
+
+    def setUp(self):
+        self.app = playbook_app_creator.app.test_client()
+
+    def test_jobs_app_creation(self):
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":true,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app',
+            'description': 'App for testing.',
+            'displayName': 'Test App',
+            'jobsApp': 'on'
+        })
+        assert rv.status_code == 200
+
+    def test_jobs_app_install_json(self):
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":true,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app',
+            'description': 'App for testing.',
+            'displayName': 'Test App',
+            'jobsApp': 'on'
+        })
+        assert rv.status_code == 200
+        assert '"playbook":' not in rv.data.decode()
+        assert '"runtimeLevel": "Organization"' in rv.data.decode()
+
+    def test_jobs_app_python_file(self):
+        rv = self.app.post('/tcex', data={
+            'parameters': '[{"validValues":"","required":true,"playbookDataType":"String","note":"","hidden":false,"encrypt":false,"default":false,"allowMultiple":false,"type":"String","name":"b","label":"a"}]',
+            'outputVariables': '[{"type":"String","name":"output1"}]',
+            'appName': 'test_app',
+            'description': 'App for testing.',
+            'displayName': 'Test App',
+            'jobsApp': 'on'
+        })
+        assert rv.status_code == 200
+        assert 'tcex.message_tc' in rv.data.decode()
+        assert 'tcex.playbook' not in rv.data.decode()
 
 
 class CreatedAppFilesTestCases(unittest.TestCase):
@@ -141,7 +189,8 @@ class CreatedAppFilesTestCases(unittest.TestCase):
             'outputVariables': '[{"type":"String","name":"output1"}]',
             'appName': 'test_app',
             'description': 'App for testing.',
-            'displayName': 'Test App'
+            'displayName': 'Test App',
+            'jobsApp': 'None'
         })
         assert rv.status_code == 200
         with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../playbook_app_creator/static/apps/test_app/README.md")), 'r') as f:
