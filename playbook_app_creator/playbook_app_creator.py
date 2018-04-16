@@ -98,13 +98,13 @@ def _update_python_file(python_file_text, parameters, output_variables, app_name
     for parameter in parameters:
         if not parameter.get('required'):
             parameter['required'] = False
-        parameters_string += "tcex.parser.add_argument('--{}', help='{}', required={})".format(parameter['name'], parameter['label'], parameter['required'])
+        parameters_string += "tcex.parser.add_argument('--{}', help='{}', required={})\n".format(parameter['name'], parameter['label'], parameter['required'])
 
     # handle output variables
     output_variables_string = str()
 
     for variable in output_variables:
-        output_variables_string += "tcex.playbook.create_output('{}', TODO: add a value here)".format(variable['name']) + "\n"
+        output_variables_string += "tcex.playbook.create_output('{}', TODO: add a value here)".format(variable['name']) + "\n    "
 
     python_file_text = python_file_text.replace("tcex.parser.add_argument('--string', help='Input string', required=True)", parameters_string)
     python_file_text = python_file_text.replace("# output the reversed string to downstream playbook apps\n    tcex.playbook.create_output('{}.reversed_string', string[::-1])".format(app_name), output_variables_string)
