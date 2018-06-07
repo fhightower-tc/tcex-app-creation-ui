@@ -33,8 +33,12 @@ def index():
 
     if app_name is None:
         app_name = ''
+    else:
+        app_name = str(app_name).strip()
     if app_description is None:
         app_description = ''
+    else:
+        app_description = str(app_description).strip()
 
     return render_template("index.html", app_name=app_name, app_description=app_description)
 
@@ -51,10 +55,11 @@ def get_app_details():
         proceed = False
 
     if proceed:
-        app_name = request.args['appName'].lower().replace(" ", "_").replace("-", "_")
-        return render_template("app-details.html", app_name=app_name, display_name=request.args['appName'], description=request.args['appDescription'], jobsApp=request.args.get('jobsApp'))
+        app_name = request.args['appName'].lower().strip()
+        app_name = app_name.replace(" ", "_").replace("-", "_")
+        return render_template("app-details.html", app_name=app_name, display_name=str(request.args.get('appName')).strip(), description=str(request.args.get('appDescription')).strip(), jobsApp=request.args.get('jobsApp'))
     else:
-        return redirect(url_for('index', appName=request.args.get('appName'), appDescription=request.args.get('appDescription')))
+        return redirect(url_for('index', appName=str(request.args.get('appName')).strip(), appDescription=str(request.args.get('appDescription')).strip()))
 
 
 def create_app_from_template(app_name, display_name, description, package_as_jobs_app):
@@ -167,9 +172,9 @@ def tcex():
             package_as_jobs_app = True
         else:
             package_as_jobs_app = False
-        create_app_from_template(request.form['appName'], request.form['displayName'], request.form['description'], package_as_jobs_app)
-        install_json, python_file = update_app(request.form['appName'], request.form['parameters'], request.form['outputVariables'])
-        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=request.form['appName'], display_name=request.form['displayName'])
+        create_app_from_template(str(request.form['appName']).strip(), request.form['displayName'], request.form['description'], package_as_jobs_app)
+        install_json, python_file = update_app(str(request.form['appName']).strip(), request.form['parameters'], request.form['outputVariables'])
+        return render_template('tcex.html', install_json=install_json, python_file=python_file, app_name=str(request.form['appName']).strip(), display_name=request.form['displayName'])
     else:
         flash('Please enter a name for this app.', 'error')
         return redirect(url_for('index'))
