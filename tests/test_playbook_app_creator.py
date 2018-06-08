@@ -78,6 +78,10 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
         rv = self.app.get('/app-details?appName=test app&appDescription=Testing app.')
         self.assertIn('value="test_app"', rv.data.decode())
 
+    def test_name_with_trailing_space(self):
+        rv = self.app.get('/app-details?appName=test app &appDescription=Testing app.')
+        self.assertIn('value="test_app"', rv.data.decode())
+
     def test_name_with_uppercase(self):
         rv = self.app.get('/app-details?appName=Test App&appDescription=Testing app.')
         self.assertIn('value="test_app"', rv.data.decode())
