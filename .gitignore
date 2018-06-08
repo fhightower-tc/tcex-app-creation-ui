@@ -104,5 +104,6 @@ venv.bak/
 .mypy_cache/
 
 # Custom additions
-playbook_app_creator/static/apps/
-!playbook_app_creator/static/apps/placeholder.txt
+tcex_app_creator/static/apps/
+!tcex_app_creator/static/apps/placeholder.txt
+.pytest_cache/

@@ -15,7 +15,7 @@ Vue.component('new-input', {
                     </span>
                 </div>
             </form>
-            <button class="button secondary" v-on:click="addParameter">Add parameter</button>
+            <button class="button secondary float-right" v-on:click="addParameter">Add parameter</button>
         </div>
     `,
     data: function () {
@@ -259,7 +259,7 @@ Vue.component('new-output', {
                     </select></label>
                 </div>
             </form>
-            <button class="button secondary" v-on:click="addOutputVariable">Add output variable</button>
+            <button class="button secondary float-right" v-on:click="addOutputVariable">Add output variable</button>
         </div>
     `,
     data: function () {

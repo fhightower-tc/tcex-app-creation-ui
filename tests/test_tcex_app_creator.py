@@ -7,7 +7,7 @@ import unittest
 
 from flask import url_for
 
-from playbook_app_creator import playbook_app_creator
+from tcex_app_creator import tcex_app_creator
 
 
 def _test_heading(response):
@@ -61,7 +61,7 @@ def _test_python_file(response, app_description, required=False):
 class PlaybookAppCreatorTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.app = playbook_app_creator.app.test_client()
+        self.app = tcex_app_creator.app.test_client()
 
     def test_get_index(self):
         rv = self.app.get('/')
@@ -141,7 +141,7 @@ class PlaybookAppCreatorTestCase(unittest.TestCase):
 class JobsAppCreationTestCases(unittest.TestCase):
 
     def setUp(self):
-        self.app = playbook_app_creator.app.test_client()
+        self.app = tcex_app_creator.app.test_client()
 
     def test_jobs_app_creation(self):
         rv = self.app.post('/tcex', data={
@@ -184,7 +184,7 @@ class JobsAppCreationTestCases(unittest.TestCase):
 class CreatedAppFilesTestCases(unittest.TestCase):
 
     def setUp(self):
-        self.app = playbook_app_creator.app.test_client()
+        self.app = tcex_app_creator.app.test_client()
 
     def test_readme_credits(self):
         """Make sure the credits in the readme are correct."""
@@ -197,7 +197,7 @@ class CreatedAppFilesTestCases(unittest.TestCase):
             'jobsApp': 'None'
         })
         assert rv.status_code == 200
-        with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../playbook_app_creator/static/apps/test_app/README.md")), 'r') as f:
+        with open(os.path.abspath(os.path.join(os.path.dirname(__file__), "../tcex_app_creator/static/apps/test_app/README.md")), 'r') as f:
             readme_text = f.read()
             assert "[Cookiecutter](https://github.com/audreyr/cookiecutter) and [Floyd Hightower's TCEX App Creation UI](http://tcex.hightower.space)" in readme_text
 
@@ -205,7 +205,7 @@ class CreatedAppFilesTestCases(unittest.TestCase):
 class PlaybookAppCreatorIncorrectRequestsTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.app = playbook_app_creator.app.test_client()
+        self.app = tcex_app_creator.app.test_client()
 
     def test_app_details_without_arguments(self):
         """This should redirect back to the index."""

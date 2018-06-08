@@ -1,1 +1,1 @@
-web: gunicorn playbook_app_creator.playbook_app_creator:app --log-file=-
+web: gunicorn tcex_app_creator.tcex_app_creator:app --log-file=-
